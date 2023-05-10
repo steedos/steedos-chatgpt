@@ -1,8 +1,9 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { persist, createJSONStorage } from "zustand/middleware";
 import { StoreKey } from "../constant";
 import { BOT_HELLO } from "./chat";
 import { ALL_MODELS } from "./config";
+import { kvStorage } from "./kvStorage";
 
 export interface AccessControlStore {
   authenticated: false;
@@ -92,6 +93,7 @@ export const useAccessStore = create<AccessControlStore>()(
     {
       name: StoreKey.Access,
       version: 1,
+      storage: createJSONStorage(() => kvStorage),
     },
   ),
 );
