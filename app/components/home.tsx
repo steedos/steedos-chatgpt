@@ -83,14 +83,16 @@ export function useSwitchTheme() {
 }
 
 const Login = async () => {
-  const keycloak = new Keycloak({
+  const keycloak = new (window as any).Keycloak({
     url: "https://id.steedos.cn",
     realm: "master",
     clientId: "steedos-oidc-public",
   });
 
   const authenticated = await keycloak.init({
-    onLoad: "login-required",
+    onLoad: "check-sso",
+    silentCheckSsoRedirectUri:
+      window.location.origin + "/silent-check-sso.html",
   });
   useAccessStore.setState({ authenticated });
 
