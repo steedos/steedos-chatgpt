@@ -94,6 +94,7 @@ const Login = async () => {
     silentCheckSsoRedirectUri:
       window.location.origin + "/silent-check-sso.html",
   });
+  if (!authenticated) keycloak.login();
   useAccessStore.setState({ authenticated });
 
   const user = await keycloak.loadUserInfo();
@@ -101,6 +102,8 @@ const Login = async () => {
 
   const profile = await keycloak.loadUserProfile();
   useAccessStore.setState({ profile });
+
+  return authenticated;
 };
 
 const useHasHydrated = () => {
@@ -111,8 +114,8 @@ const useHasHydrated = () => {
   // }, []);
 
   useEffect(() => {
-    Login().then(() => {
-      setHasHydrated(true);
+    Login().then((authenticated) => {
+      setHasHydrated(authenticated);
     });
   }, []);
 
