@@ -24,6 +24,7 @@ import {
 import { SideBar } from "./sidebar";
 import { useAppConfig } from "../store/config";
 import { useMaskStore } from "../store/mask";
+import { useAccessStore } from "../store/access";
 
 export function Loading(props: { noLogo?: boolean }) {
   return (
@@ -81,11 +82,36 @@ export function useSwitchTheme() {
   }, [config.theme]);
 }
 
+const Login = async () => {
+  const keycloak = new Keycloak({
+    url: "https://id.steedos.cn",
+    realm: "master",
+    clientId: "steedos-oidc-public",
+  });
+
+  const authenticated = await keycloak.init({
+    onLoad: "login-required",
+  });
+  useAccessStore.setState({ authenticated });
+
+  const user = await keycloak.loadUserInfo();
+  useAccessStore.setState({ user });
+
+  const profile = await keycloak.loadUserProfile();
+  useAccessStore.setState({ profile });
+};
+
 const useHasHydrated = () => {
   const [hasHydrated, setHasHydrated] = useState<boolean>(false);
 
+  // useEffect(() => {
+  //   setHasHydrated(true);
+  // }, []);
+
   useEffect(() => {
-    setHasHydrated(true);
+    Login().then(() => {
+      setHasHydrated(true);
+    });
   }, []);
 
   return hasHydrated;
