@@ -103,6 +103,7 @@ const Login = async () => {
   const profile = await keycloak.loadUserProfile();
   useAccessStore.setState({ profile });
 
+  (window as any).keycloak = keycloak;
   return authenticated;
 };
 
