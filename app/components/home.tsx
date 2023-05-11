@@ -25,6 +25,38 @@ import { SideBar } from "./sidebar";
 import { useAppConfig } from "../store/config";
 import { useMaskStore } from "../store/mask";
 import { useAccessStore } from "../store/access";
+import { useKeyCloakStore } from "../store/keycloak";
+
+const Login = async () => {
+  const keycloak = new (window as any).Keycloak({
+    url: "https://id.steedos.cn",
+    realm: "master",
+    clientId: "steedos-oidc-public",
+  });
+  (window as any).keycloak = keycloak;
+  (window as any).useKeyCloakStore = useKeyCloakStore;
+
+  const authenticated = await keycloak.init({
+    onLoad: "check-sso",
+    silentCheckSsoRedirectUri:
+      window.location.origin + "/silent-check-sso.html",
+  });
+  useKeyCloakStore.setState({ authenticated });
+  if (!authenticated) {
+    keycloak.login();
+    return false;
+  } else {
+    const user = await keycloak.loadUserInfo();
+    useKeyCloakStore.setState({ user });
+
+    const profile = await keycloak.loadUserProfile();
+    useKeyCloakStore.setState({ profile });
+    useKeyCloakStore.setState({ token: keycloak.token });
+  }
+
+  (window as any).keycloak = keycloak;
+  return authenticated;
+};
 
 export function Loading(props: { noLogo?: boolean }) {
   return (
@@ -81,31 +113,6 @@ export function useSwitchTheme() {
     }
   }, [config.theme]);
 }
-
-const Login = async () => {
-  const keycloak = new (window as any).Keycloak({
-    url: "https://id.steedos.cn",
-    realm: "master",
-    clientId: "steedos-oidc-public",
-  });
-
-  const authenticated = await keycloak.init({
-    onLoad: "check-sso",
-    silentCheckSsoRedirectUri:
-      window.location.origin + "/silent-check-sso.html",
-  });
-  if (!authenticated) keycloak.login();
-  useAccessStore.setState({ authenticated });
-
-  const user = await keycloak.loadUserInfo();
-  useAccessStore.setState({ user });
-
-  const profile = await keycloak.loadUserProfile();
-  useAccessStore.setState({ profile });
-
-  (window as any).keycloak = keycloak;
-  return authenticated;
-};
 
 const useHasHydrated = () => {
   const [hasHydrated, setHasHydrated] = useState<boolean>(false);

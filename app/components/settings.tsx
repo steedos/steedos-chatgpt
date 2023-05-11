@@ -21,6 +21,7 @@ import {
   useUpdateStore,
   useAccessStore,
   useAppConfig,
+  useKeyValueStore,
 } from "../store";
 
 import Locale, { AllLangs, changeLang, getLang } from "../locales";
@@ -245,6 +246,14 @@ export function Settings() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
+
+  const validString = (x: string) => x && x.length > 0;
+  const keyvalueStore = useKeyValueStore();
+  const keyvalueHasHydrated = useKeyValueStore((state) => state._hasHydrated);
+
+  useEffect(() => {
+    accessStore.updateToken(keyvalueStore.token);
+  }, [keyvalueHasHydrated]);
 
   const promptStore = usePromptStore();
   const builtinCount = SearchService.count.builtin;
@@ -500,6 +509,7 @@ export function Settings() {
                 placeholder={Locale.Settings.Token.Placeholder}
                 onChange={(e) => {
                   accessStore.updateToken(e.currentTarget.value);
+                  keyvalueStore.updateToken(e.currentTarget.value);
                 }}
               />
             </ListItem>

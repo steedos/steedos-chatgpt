@@ -1,15 +1,10 @@
 import { create } from "zustand";
-import { persist, createJSONStorage } from "zustand/middleware";
+import { persist } from "zustand/middleware";
 import { StoreKey } from "../constant";
 import { BOT_HELLO } from "./chat";
 import { ALL_MODELS } from "./config";
-import { kvStorage } from "./kvStorage";
 
 export interface AccessControlStore {
-  authenticated: false;
-  user: any;
-  profile: any;
-
   accessCode: string;
   token: string;
 
@@ -29,10 +24,6 @@ let fetchState = 0; // 0 not fetch, 1 fetching, 2 done
 export const useAccessStore = create<AccessControlStore>()(
   persist(
     (set, get) => ({
-      authenticated: false,
-      user: {},
-      profile: {},
-
       token: "",
       accessCode: "",
       needCode: true,
@@ -93,7 +84,7 @@ export const useAccessStore = create<AccessControlStore>()(
     {
       name: StoreKey.Access,
       version: 1,
-      storage: createJSONStorage(() => kvStorage),
+      // storage: createJSONStorage(() => kvStorage),
     },
   ),
 );
