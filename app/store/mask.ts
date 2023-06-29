@@ -2,15 +2,17 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { BUILTIN_MASKS } from "../masks";
 import { getLang, Lang } from "../locales";
-import { DEFAULT_TOPIC, Message } from "./chat";
-import { ModelConfig, ModelType, useAppConfig } from "./config";
+import { DEFAULT_TOPIC, ChatMessage } from "./chat";
+import { ModelConfig, useAppConfig } from "./config";
 import { StoreKey } from "../constant";
 
 export type Mask = {
   id: number;
   avatar: string;
   name: string;
-  context: Message[];
+  hideContext?: boolean;
+  context: ChatMessage[];
+  syncGlobalConfig?: boolean;
   modelConfig: ModelConfig;
   lang: Lang;
   builtin: boolean;
@@ -39,6 +41,7 @@ export const createEmptyMask = () =>
     avatar: DEFAULT_MASK_AVATAR,
     name: DEFAULT_TOPIC,
     context: [],
+    syncGlobalConfig: true, // use global config as default
     modelConfig: { ...useAppConfig.getState().modelConfig },
     lang: getLang(),
     builtin: false,
@@ -86,7 +89,18 @@ export const useMaskStore = create<MaskStore>()(
         const userMasks = Object.values(get().masks).sort(
           (a, b) => b.id - a.id,
         );
-        return userMasks.concat(BUILTIN_MASKS);
+        const config = useAppConfig.getState();
+        const buildinMasks = BUILTIN_MASKS.map(
+          (m) =>
+            ({
+              ...m,
+              modelConfig: {
+                ...config.modelConfig,
+                ...m.modelConfig,
+              },
+            } as Mask),
+        );
+        return userMasks.concat(buildinMasks);
       },
       search(text) {
         return Object.values(get().masks);
