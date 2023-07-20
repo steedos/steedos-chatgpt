@@ -30,7 +30,7 @@ import {
   useUpdateStore,
   useAccessStore,
   useAppConfig,
-  useKeyValueStore,
+  // useKeyValueStore,
 } from "../store";
 
 import Locale, {
@@ -373,12 +373,12 @@ export function Settings() {
   );
 
   const validString = (x: string) => x && x.length > 0;
-  const keyvalueStore = useKeyValueStore();
-  const keyvalueHasHydrated = useKeyValueStore((state) => state._hasHydrated);
+  // const keyvalueStore = useKeyValueStore();
+  // const keyvalueHasHydrated = useKeyValueStore((state) => state._hasHydrated);
 
-  useEffect(() => {
-    accessStore.updateToken(keyvalueStore.token);
-  }, [keyvalueHasHydrated]);
+  // useEffect(() => {
+  //   accessStore.updateToken(keyvalueStore.token);
+  // }, [keyvalueHasHydrated]);
 
   const promptStore = usePromptStore();
   const builtinCount = SearchService.count.builtin;
@@ -614,7 +614,7 @@ export function Settings() {
                 placeholder={Locale.Settings.Token.Placeholder}
                 onChange={(e) => {
                   accessStore.updateToken(e.currentTarget.value);
-                  keyvalueStore.updateToken(e.currentTarget.value);
+                  // keyvalueStore.updateToken(e.currentTarget.value);
                 }}
               />
             </ListItem>

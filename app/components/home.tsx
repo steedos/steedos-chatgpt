@@ -28,7 +28,7 @@ import { useAppConfig } from "../store/config";
 import { useMaskStore } from "../store/mask";
 import { useAccessStore } from "../store/access";
 import { useKeyCloakStore } from "../store/keycloak";
-import { useKeyValueStore } from "../store/keyvalue";
+// import { useKeyValueStore } from "../store/keyvalue";
 import { AuthPage } from "./auth";
 import { getClientConfig } from "../config/client";
 
@@ -57,7 +57,7 @@ const Login = async () => {
     const profile = await keycloak.loadUserProfile();
     useKeyCloakStore.setState({ profile });
     useKeyCloakStore.setState({ token: keycloak.token });
-    await useKeyValueStore.persist.rehydrate();
+    // await useKeyValueStore.persist.rehydrate();
   }
 
   (window as any).keycloak = keycloak;
