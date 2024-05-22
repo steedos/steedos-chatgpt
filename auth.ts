@@ -4,6 +4,7 @@ import Keycloak from "next-auth/providers/keycloak"
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [Keycloak({
   })],
+  trustHost: true,
   callbacks: {
     signIn({ profile, user, account, ...params }) {
       console.log('signIn', profile, user, account, params)

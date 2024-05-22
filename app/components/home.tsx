@@ -133,7 +133,7 @@ function Screen() {
   const session = useSession();
   const unauthenticated = session?.status && session?.status === "unauthenticated";
   if (unauthenticated) {
-    navigate("/auth");
+    // navigate("/auth");
     document.location.href = "/#/auth";
   } 
 
