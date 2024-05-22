@@ -176,7 +176,7 @@ export function SideBar(props: { className?: string }) {
         <div className={styles["sidebar-logo"] + " no-dark"}>
           {/* <ChatGptIcon /> */}
           <div className={styles["sidebar-action"]}>
-            <IconButton icon={<LogoutIcon />} shadow onClick={()=> {signOut('keycloak')}}/>
+            <IconButton icon={<LogoutIcon />} shadow onClick={()=> {signOut()}}/>
           </div>
         </div>
       </div>

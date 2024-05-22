@@ -134,6 +134,7 @@ function Screen() {
   const unauthenticated = session?.status && session?.status === "unauthenticated";
   if (unauthenticated) {
     navigate("/auth");
+    document.location.href = "/#/auth";
   } 
 
   const config = useAppConfig();
