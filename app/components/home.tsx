@@ -1,5 +1,9 @@
 "use client";
 
+import { auth } from "@/auth"
+import { signIn } from "next-auth/react"
+import { useSession } from "next-auth/react"
+
 require("../polyfill");
 
 import { useState, useEffect } from "react";
@@ -22,6 +26,7 @@ import {
   Routes,
   Route,
   useLocation,
+  useNavigate,
 } from "react-router-dom";
 import { SideBar } from "./sidebar";
 import { useAppConfig } from "../store/config";
@@ -124,6 +129,13 @@ const loadAsyncGoogleFont = () => {
 };
 
 function Screen() {
+  let navigate = useNavigate();
+  const session = useSession();
+  const unauthenticated = session?.status && session?.status === "unauthenticated";
+  if (unauthenticated) {
+    navigate("/auth");
+  } 
+
   const config = useAppConfig();
   const location = useLocation();
   const isHome = location.pathname === Path.Home;
@@ -132,9 +144,9 @@ function Screen() {
   const shouldTightBorder =
     getClientConfig()?.isApp || (config.tightBorder && !isMobileScreen);
 
-  useEffect(() => {
-    loadAsyncGoogleFont();
-  }, []);
+  // useEffect(() => {
+  //   loadAsyncGoogleFont();
+  // }, []);
 
   return (
     <div

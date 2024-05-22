@@ -1,4 +1,5 @@
 import { type OpenAIListModelResponse } from "@/app/client/platforms/openai";
+import { auth as nextAuth } from "@/auth"
 import { getServerSideConfig } from "@/app/config/server";
 import { ModelProvider, OpenaiPath } from "@/app/constant";
 import { prettyObject } from "@/app/utils/format";
@@ -71,8 +72,16 @@ async function handle(
   }
 }
 
-export const GET = handle;
-export const POST = handle;
+// export const GET = handle;
+// export const POST = handle;
+export const GET = nextAuth(function GET(req, params: any) {
+  if (req.auth) return handle(req, params)
+  return NextResponse.json({ message: "Not authenticated" }, { status: 401 })
+})
+export const POST = nextAuth(function POST(req, params: any) {
+  if (req.auth) return handle(req, params)
+  return NextResponse.json({ message: "Not authenticated" }, { status: 401 })
+})
 
 export const runtime = "edge";
 export const preferredRegion = [

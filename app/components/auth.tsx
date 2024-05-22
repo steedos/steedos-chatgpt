@@ -1,3 +1,7 @@
+import { signIn } from "next-auth/react"
+import { useSession } from "next-auth/react"
+
+
 import styles from "./auth.module.scss";
 import { IconButton } from "./button";
 
@@ -23,6 +27,12 @@ export function AuthPage() {
     });
   }; // Reset access code to empty string
 
+  const session = useSession();
+  const authenticated = session?.status && session?.status === "authenticated";
+  if (authenticated) {
+    goHome();
+  } 
+
   useEffect(() => {
     if (getClientConfig()?.isApp) {
       navigate(Path.Settings);
@@ -36,10 +46,11 @@ export function AuthPage() {
         <BotIcon />
       </div>
 
-      <div className={styles["auth-title"]}>{Locale.Auth.Title}</div>
-      <div className={styles["auth-tips"]}>{Locale.Auth.Tips}</div>
+      <div className={styles["auth-title"]}>ChatGPT</div>
+      {/* <div className={styles["auth-title"]}>{Locale.Auth.Title}</div> */}
+      {/* <div className={styles["auth-tips"]}>{Locale.Auth.Tips}</div> */}
 
-      <input
+      {/* <input
         className={styles["auth-input"]}
         type="password"
         placeholder={Locale.Auth.Input}
@@ -76,10 +87,10 @@ export function AuthPage() {
             }}
           />
         </>
-      ) : null}
+      ) : null} */}
 
       <div className={styles["auth-actions"]}>
-        <IconButton
+        {/* <IconButton
           text={Locale.Auth.Confirm}
           type="primary"
           onClick={goChat}
@@ -90,6 +101,12 @@ export function AuthPage() {
             resetAccessCode();
             goHome();
           }}
+        /> */}
+        <br/>
+        <IconButton
+          text={Locale.Auth.SignIn}
+          type="primary"
+          onClick={()=>signIn('keycloak')}
         />
       </div>
     </div>

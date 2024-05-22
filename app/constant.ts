@@ -86,6 +86,7 @@ export const Anthropic = {
 };
 
 export const OpenaiPath = {
+  CloudflareChatPath: "chat/completions",
   ChatPath: "v1/chat/completions",
   UsagePath: "dashboard/billing/usage",
   SubsPath: "dashboard/billing/subscription",

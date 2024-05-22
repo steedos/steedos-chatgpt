@@ -1,4 +1,6 @@
 import { useEffect, useRef, useMemo } from "react";
+import { signIn, signOut } from "next-auth/react"
+import { useSession } from "next-auth/react"
 
 import styles from "./home.module.scss";
 
@@ -12,6 +14,7 @@ import DeleteIcon from "../icons/delete.svg";
 import MaskIcon from "../icons/mask.svg";
 import PluginIcon from "../icons/plugin.svg";
 import DragIcon from "../icons/drag.svg";
+import LogoutIcon from "../icons/logout.svg";
 
 import Locale from "../locales";
 
@@ -129,6 +132,9 @@ function useDragSideBar() {
 }
 
 export function SideBar(props: { className?: string }) {
+  const session = useSession();
+  const authencated = session?.data?.user ? true : false;
+
   const chatStore = useChatStore();
 
   // drag side bar
@@ -155,17 +161,27 @@ export function SideBar(props: { className?: string }) {
     >
       <div className={styles["sidebar-header"]} data-tauri-drag-region>
         <div className={styles["sidebar-title"]} data-tauri-drag-region>
-          NextChat
+          ChatGPT
         </div>
         <div className={styles["sidebar-sub-title"]}>
-          Build your own AI assistant.
+          {/* Build your own AI assistant. */}
+          {authencated && (
+            <>
+              <b>{session.data?.user?.name}</b>
+              <br/> 
+              {session.data?.user?.email}
+              </>
+          )}
         </div>
         <div className={styles["sidebar-logo"] + " no-dark"}>
-          <ChatGptIcon />
+          {/* <ChatGptIcon /> */}
+          <div className={styles["sidebar-action"]}>
+            <IconButton icon={<LogoutIcon />} shadow onClick={()=> {signOut('keycloak')}}/>
+          </div>
         </div>
       </div>
 
-      <div className={styles["sidebar-header-bar"]}>
+      {/* <div className={styles["sidebar-header-bar"]}>
         <IconButton
           icon={<MaskIcon />}
           text={shouldNarrow ? undefined : Locale.Mask.Name}
@@ -186,7 +202,7 @@ export function SideBar(props: { className?: string }) {
           onClick={() => showToast(Locale.WIP)}
           shadow
         />
-      </div>
+      </div> */}
 
       <div
         className={styles["sidebar-body"]}
@@ -216,11 +232,11 @@ export function SideBar(props: { className?: string }) {
               <IconButton icon={<SettingsIcon />} shadow />
             </Link>
           </div>
-          <div className={styles["sidebar-action"]}>
+          {/* <div className={styles["sidebar-action"]}>
             <a href={REPO_URL} target="_blank" rel="noopener noreferrer">
               <IconButton icon={<GithubIcon />} shadow />
             </a>
-          </div>
+          </div> */}
         </div>
         <div>
           <IconButton

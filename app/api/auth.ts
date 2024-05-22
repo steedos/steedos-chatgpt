@@ -1,4 +1,5 @@
 import { NextRequest } from "next/server";
+
 import { getServerSideConfig } from "../config/server";
 import md5 from "spark-md5";
 import { ACCESS_CODE_PREFIX, ModelProvider } from "../constant";
@@ -25,6 +26,7 @@ function parseApiKey(bearToken: string) {
 }
 
 export function auth(req: NextRequest, modelProvider: ModelProvider) {
+  
   const authToken = req.headers.get("Authorization") ?? "";
 
   // check if it is openai api key or user token
