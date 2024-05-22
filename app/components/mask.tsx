@@ -18,10 +18,11 @@ import {
   ChatMessage,
   createMessage,
   ModelConfig,
+  ModelType,
   useAppConfig,
   useChatStore,
 } from "../store";
-import { ROLES } from "../client/api";
+import { MultimodalContent, ROLES } from "../client/api";
 import {
   Input,
   List,
@@ -37,7 +38,12 @@ import { useNavigate } from "react-router-dom";
 
 import chatStyle from "./chat.module.scss";
 import { useEffect, useState } from "react";
-import { copyToClipboard, downloadAs, readFromFile } from "../utils";
+import {
+  copyToClipboard,
+  downloadAs,
+  getMessageImages,
+  readFromFile,
+} from "../utils";
 import { Updater } from "../typing";
 import { ModelConfigList } from "./model-config";
 import { FileName, Path } from "../constant";
@@ -49,6 +55,7 @@ import {
   Draggable,
   OnDragEndResponder,
 } from "@hello-pangea/dnd";
+import { getMessageTextContent } from "../utils";
 
 // drag and drop helper function
 function reorder<T>(list: T[], startIndex: number, endIndex: number): T[] {
@@ -58,11 +65,11 @@ function reorder<T>(list: T[], startIndex: number, endIndex: number): T[] {
   return result;
 }
 
-export function MaskAvatar(props: { mask: Mask }) {
-  return props.mask.avatar !== DEFAULT_MASK_AVATAR ? (
-    <Avatar avatar={props.mask.avatar} />
+export function MaskAvatar(props: { avatar: string; model?: ModelType }) {
+  return props.avatar !== DEFAULT_MASK_AVATAR ? (
+    <Avatar avatar={props.avatar} />
   ) : (
-    <Avatar model={props.mask.modelConfig.model} />
+    <Avatar model={props.model} />
   );
 }
 
@@ -123,7 +130,10 @@ export function MaskConfig(props: {
               onClick={() => setShowPicker(true)}
               style={{ cursor: "pointer" }}
             >
-              <MaskAvatar mask={props.mask} />
+              <MaskAvatar
+                avatar={props.mask.avatar}
+                model={props.mask.modelConfig.model}
+              />
             </div>
           </Popover>
         </ListItem>
@@ -215,67 +225,58 @@ function ContextPromptItem(props: {
   const [focusingInput, setFocusingInput] = useState(false);
 
   return (
-    <Draggable draggableId={props.prompt.id || props.index.toString()} index={props.index}>
-      {(provided) => (
-        <div
-          className={chatStyle["context-prompt-row"]}
-          ref={provided.innerRef}
-          {...provided.draggableProps}
-          {...provided.dragHandleProps}
-        >
-          {!focusingInput && (
-            <>
-              <div className={chatStyle["context-drag"]}>
-                <DragIcon />
-              </div>
-              <Select
-                value={props.prompt.role}
-                className={chatStyle["context-role"]}
-                onChange={(e) =>
-                  props.update({
-                    ...props.prompt,
-                    role: e.target.value as any,
-                  })
-                }
-              >
-                {ROLES.map((r) => (
-                  <option key={r} value={r}>
-                    {r}
-                  </option>
-                ))}
-              </Select>
-            </>
-          )}
-          <Input
-            value={props.prompt.content}
-            type="text"
-            className={chatStyle["context-content"]}
-            rows={focusingInput ? 5 : 1}
-            onFocus={() => setFocusingInput(true)}
-            onBlur={() => {
-              setFocusingInput(false);
-              // If the selection is not removed when the user loses focus, some
-              // extensions like "Translate" will always display a floating bar
-              window?.getSelection()?.removeAllRanges();
-            }}
-            onInput={(e) =>
+    <div className={chatStyle["context-prompt-row"]}>
+      {!focusingInput && (
+        <>
+          <div className={chatStyle["context-drag"]}>
+            <DragIcon />
+          </div>
+          <Select
+            value={props.prompt.role}
+            className={chatStyle["context-role"]}
+            onChange={(e) =>
               props.update({
                 ...props.prompt,
-                content: e.currentTarget.value as any,
+                role: e.target.value as any,
               })
             }
-          />
-          {!focusingInput && (
-            <IconButton
-              icon={<DeleteIcon />}
-              className={chatStyle["context-delete-button"]}
-              onClick={() => props.remove()}
-              bordered
-            />
-          )}
-        </div>
+          >
+            {ROLES.map((r) => (
+              <option key={r} value={r}>
+                {r}
+              </option>
+            ))}
+          </Select>
+        </>
       )}
-    </Draggable>
+      <Input
+        value={getMessageTextContent(props.prompt)}
+        type="text"
+        className={chatStyle["context-content"]}
+        rows={focusingInput ? 5 : 1}
+        onFocus={() => setFocusingInput(true)}
+        onBlur={() => {
+          setFocusingInput(false);
+          // If the selection is not removed when the user loses focus, some
+          // extensions like "Translate" will always display a floating bar
+          window?.getSelection()?.removeAllRanges();
+        }}
+        onInput={(e) =>
+          props.update({
+            ...props.prompt,
+            content: e.currentTarget.value as any,
+          })
+        }
+      />
+      {!focusingInput && (
+        <IconButton
+          icon={<DeleteIcon />}
+          className={chatStyle["context-delete-button"]}
+          onClick={() => props.remove()}
+          bordered
+        />
+      )}
+    </div>
   );
 }
 
@@ -285,8 +286,8 @@ export function ContextPrompts(props: {
 }) {
   const context = props.context;
 
-  const addContextPrompt = (prompt: ChatMessage) => {
-    props.updateContext((context) => context.push(prompt));
+  const addContextPrompt = (prompt: ChatMessage, i: number) => {
+    props.updateContext((context) => context.splice(i, 0, prompt));
   };
 
   const removeContextPrompt = (i: number) => {
@@ -294,7 +295,18 @@ export function ContextPrompts(props: {
   };
 
   const updateContextPrompt = (i: number, prompt: ChatMessage) => {
-    props.updateContext((context) => (context[i] = prompt));
+    props.updateContext((context) => {
+      const images = getMessageImages(context[i]);
+      context[i] = prompt;
+      if (images.length > 0) {
+        const text = getMessageTextContent(context[i]);
+        const newContext: MultimodalContent[] = [{ type: "text", text }];
+        for (const img of images) {
+          newContext.push({ type: "image_url", image_url: { url: img } });
+        }
+        context[i].content = newContext;
+      }
+    });
   };
 
   const onDragEnd: OnDragEndResponder = (result) => {
@@ -319,13 +331,41 @@ export function ContextPrompts(props: {
             {(provided) => (
               <div ref={provided.innerRef} {...provided.droppableProps}>
                 {context.map((c, i) => (
-                  <ContextPromptItem
+                  <Draggable
+                    draggableId={c.id || i.toString()}
                     index={i}
                     key={c.id}
-                    prompt={c}
-                    update={(prompt) => updateContextPrompt(i, prompt)}
-                    remove={() => removeContextPrompt(i)}
-                  />
+                  >
+                    {(provided) => (
+                      <div
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                      >
+                        <ContextPromptItem
+                          index={i}
+                          prompt={c}
+                          update={(prompt) => updateContextPrompt(i, prompt)}
+                          remove={() => removeContextPrompt(i)}
+                        />
+                        <div
+                          className={chatStyle["context-prompt-insert"]}
+                          onClick={() => {
+                            addContextPrompt(
+                              createMessage({
+                                role: "user",
+                                content: "",
+                                date: new Date().toLocaleString(),
+                              }),
+                              i + 1,
+                            );
+                          }}
+                        >
+                          <AddIcon />
+                        </div>
+                      </div>
+                    )}
+                  </Draggable>
                 ))}
                 {provided.placeholder}
               </div>
@@ -333,23 +373,26 @@ export function ContextPrompts(props: {
           </Droppable>
         </DragDropContext>
 
-        <div className={chatStyle["context-prompt-row"]}>
-          <IconButton
-            icon={<AddIcon />}
-            text={Locale.Context.Add}
-            bordered
-            className={chatStyle["context-prompt-button"]}
-            onClick={() =>
-              addContextPrompt(
-                createMessage({
-                  role: "user",
-                  content: "",
-                  date: "",
-                }),
-              )
-            }
-          />
-        </div>
+        {props.context.length === 0 && (
+          <div className={chatStyle["context-prompt-row"]}>
+            <IconButton
+              icon={<AddIcon />}
+              text={Locale.Context.Add}
+              bordered
+              className={chatStyle["context-prompt-button"]}
+              onClick={() =>
+                addContextPrompt(
+                  createMessage({
+                    role: "user",
+                    content: "",
+                    date: "",
+                  }),
+                  props.context.length,
+                )
+              }
+            />
+          </div>
+        )}
       </div>
     </>
   );
@@ -361,7 +404,16 @@ export function MaskPage() {
   const maskStore = useMaskStore();
   const chatStore = useChatStore();
 
-  const [filterLang, setFilterLang] = useState<Lang>();
+  const [filterLang, setFilterLang] = useState<Lang | undefined>(
+    () => localStorage.getItem("Mask-language") as Lang | undefined,
+  );
+  useEffect(() => {
+    if (filterLang) {
+      localStorage.setItem("Mask-language", filterLang);
+    } else {
+      localStorage.removeItem("Mask-language");
+    }
+  }, [filterLang]);
 
   const allMasks = maskStore
     .getAll()
@@ -371,11 +423,13 @@ export function MaskPage() {
   const [searchText, setSearchText] = useState("");
   const masks = searchText.length > 0 ? searchMasks : allMasks;
 
-  // simple search, will refactor later
+  // refactored already, now it accurate
   const onSearch = (text: string) => {
     setSearchText(text);
     if (text.length > 0) {
-      const result = allMasks.filter((m) => m.name.includes(text));
+      const result = allMasks.filter((m) =>
+        m.name.toLowerCase().includes(text.toLowerCase()),
+      );
       setSearchMasks(result);
     } else {
       setSearchMasks(allMasks);
@@ -388,7 +442,7 @@ export function MaskPage() {
   const closeMaskModal = () => setEditingMaskId(undefined);
 
   const downloadAll = () => {
-    downloadAs(JSON.stringify(masks), FileName.Masks);
+    downloadAs(JSON.stringify(masks.filter((v) => !v.builtin)), FileName.Masks);
   };
 
   const importFromFile = () => {
@@ -430,11 +484,13 @@ export function MaskPage() {
                 icon={<DownloadIcon />}
                 bordered
                 onClick={downloadAll}
+                text={Locale.UI.Export}
               />
             </div>
             <div className="window-action-button">
               <IconButton
                 icon={<UploadIcon />}
+                text={Locale.UI.Import}
                 bordered
                 onClick={() => importFromFile()}
               />
@@ -497,7 +553,7 @@ export function MaskPage() {
               <div className={styles["mask-item"]} key={m.id}>
                 <div className={styles["mask-header"]}>
                   <div className={styles["mask-icon"]}>
-                    <MaskAvatar mask={m} />
+                    <MaskAvatar avatar={m.avatar} model={m.modelConfig.model} />
                   </div>
                   <div className={styles["mask-title"]}>
                     <div className={styles["mask-name"]}>{m.name}</div>
@@ -582,7 +638,7 @@ export function MaskPage() {
             <MaskConfig
               mask={editingMask}
               updateMask={(updater) =>
-                maskStore.update(editingMaskId!, updater)
+                maskStore.updateMask(editingMaskId!, updater)
               }
               readonly={editingMask.builtin}
             />
