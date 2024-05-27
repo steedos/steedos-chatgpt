@@ -135,7 +135,7 @@
 
 .sidebar-header {
   position: relative;
-  padding-top: 20px;
+  padding-top: 0px;
   padding-bottom: 20px;
 }
 
@@ -149,6 +149,7 @@
   font-size: 20px;
   font-weight: bold;
   animation: slide-in ease 0.3s;
+  margin-bottom: 6px;;
 }
 
 .sidebar-sub-title {

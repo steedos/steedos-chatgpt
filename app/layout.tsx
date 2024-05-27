@@ -11,7 +11,7 @@ import { GoogleTagManager } from "@next/third-parties/google";
 const serverConfig = getServerSideConfig();
 
 export const metadata: Metadata = {
-  title: "ChatGPT",
+  title: "智能助手",
   description: "Your personal ChatGPT Chat Bot.",
   viewport: {
     width: "device-width",
@@ -38,7 +38,8 @@ export default function RootLayout({
       <head>
         <meta name="config" content={JSON.stringify(getClientConfig())} />
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-        <link rel="manifest" href="/site.webmanifest"></link>
+        {/* <link rel="manifest" href="/site.webmanifest"></link> */}
+        <link rel="icon" type="image/svg" href="/logo.svg"></link>
         <script src="/serviceWorkerRegister.js" defer></script>
       </head>
       <body>

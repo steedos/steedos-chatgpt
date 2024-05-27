@@ -46,7 +46,7 @@ export function AuthPage() {
         <BotIcon />
       </div>
 
-      <div className={styles["auth-title"]}>ChatGPT</div>
+      <div className={styles["auth-title"]}>智能助手</div>
       {/* <div className={styles["auth-title"]}>{Locale.Auth.Title}</div> */}
       {/* <div className={styles["auth-tips"]}>{Locale.Auth.Tips}</div> */}
 
