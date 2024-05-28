@@ -5,18 +5,18 @@
   --theme: light;
 
   /* color */
-  --white: white;
+  --white: #ececea;
   --black: rgb(48, 48, 48);
   --gray: rgb(250, 250, 250);
   --primary: rgb(2,132,199);
-  --second: #f9f9f9;
+  --second: #e0dfde;
   --hover-color: #f3f3f3;
   --bar-color: rgba(0, 0, 0, 0.1);
   --theme-color: var(--gray);
 
   /* shadow */
   --shadow: 50px 50px 100px 10px rgb(0, 0, 0, 0.1);
-  --card-shadow: 0px 2px 4px 0px rgb(0, 0, 0, 0.05);
+  --card-shadow: none; //0px 1px 2px 0px rgb(0, 0, 0, 0.5);
 
   /* stroke */
   --border-in-light: 1px solid rgb(222, 222, 222);
