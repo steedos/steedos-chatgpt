@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { signIn, signOut } from "next-auth/react"
 
 import styles from "./settings.module.scss";
 
@@ -1251,6 +1252,21 @@ export function Settings() {
         )}
 
         <DangerItems />
+
+
+        <List>
+          <ListItem
+            title="退出当前登录的账户"
+          >
+            <IconButton
+              text="注销"
+              onClick={async () => {
+                signOut();
+              }}
+              type="danger"
+            />
+          </ListItem>
+        </List>
       </div>
     </ErrorBoundary>
   );

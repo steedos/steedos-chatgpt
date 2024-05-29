@@ -46,9 +46,10 @@ export function AuthPage() {
         <BotIcon />
       </div>
 
-      <div className={styles["auth-title"]}>智能助手</div>
-      {/* <div className={styles["auth-title"]}>{Locale.Auth.Title}</div> */}
-      {/* <div className={styles["auth-tips"]}>{Locale.Auth.Tips}</div> */}
+      <div className={styles["auth-title"]}>{Locale.App.Title}</div>
+      <div className={styles["auth-tips"]}>{Locale.App.Description}</div>
+      {/* <div className={styles["auth-title"]}>{Locale.Auth.Title}</div>
+      <div className={styles["auth-tips"]}>{Locale.Auth.Tips}</div> */}
 
       {/* <input
         className={styles["auth-input"]}

@@ -161,23 +161,24 @@ export function SideBar(props: { className?: string }) {
     >
       <div className={styles["sidebar-header"]} data-tauri-drag-region>
         <div className={styles["sidebar-title"]} data-tauri-drag-region>
-          智能助手
+          {Locale.App.Title}
         </div>
         <div className={styles["sidebar-sub-title"]}>
+          {Locale.App.Description}
           {/* Build your own AI assistant. */}
-          {authencated && (
+          {/* {authencated && (
             <>
               <b>{session.data?.user?.name}</b>
               <br/> 
               {session.data?.user?.email}
               </>
-          )}
+          )} */}
         </div>
         <div className={styles["sidebar-logo"] + " no-dark"}>
           {/* <ChatGptIcon /> */}
-          <div className={styles["sidebar-action"]}>
+          {/* <div className={styles["sidebar-action"]}>
             <IconButton icon={<LogoutIcon />} shadow onClick={()=> {signOut()}}/>
-          </div>
+          </div> */}
         </div>
       </div>
 
@@ -228,8 +229,8 @@ export function SideBar(props: { className?: string }) {
             />
           </div>
           <div className={styles["sidebar-action"]}>
-            <Link to={Path.Settings}>
-              <IconButton icon={<SettingsIcon />} shadow />
+            <Link to={Path.Settings} className="link">
+              <IconButton icon={<SettingsIcon />} shadow text={shouldNarrow ? undefined : Locale.Settings.Title} />
             </Link>
           </div>
           {/* <div className={styles["sidebar-action"]}>

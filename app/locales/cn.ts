@@ -4,6 +4,10 @@ import { SubmitKey } from "../store/config";
 const isApp = !!getClientConfig()?.isApp;
 
 const cn = {
+  App: {
+    Title: "Chatbot Builder",
+    Description: "构建你的人工智能助手，支持全球主流大模型。",
+  },
   WIP: "该功能仍在开发中……",
   Error: {
     Unauthorized: isApp

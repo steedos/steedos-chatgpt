@@ -11,8 +11,8 @@ import { GoogleTagManager } from "@next/third-parties/google";
 const serverConfig = getServerSideConfig();
 
 export const metadata: Metadata = {
-  title: "智能助手",
-  description: "Your personal ChatGPT Chat Bot.",
+  title: "ChatGPT",
+  description: "Enterprise ChatGPT Chat Bot.",
   viewport: {
     width: "device-width",
     initialScale: 1,
