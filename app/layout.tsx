@@ -7,12 +7,13 @@ import { type Metadata } from "next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { getServerSideConfig } from "./config/server";
 import { GoogleTagManager } from "@next/third-parties/google";
+import Locale from "./locales";
 
 const serverConfig = getServerSideConfig();
 
 export const metadata: Metadata = {
-  title: "ChatGPT",
-  description: "Enterprise ChatGPT Chat Bot.",
+  title: Locale.App.Title, //"Chatbot Builder",
+  description: Locale.App.Description, //"Enterprise ChatGPT Chat Bot.",
   viewport: {
     width: "device-width",
     initialScale: 1,
@@ -23,7 +24,7 @@ export const metadata: Metadata = {
     { media: "(prefers-color-scheme: dark)", color: "#151515" },
   ],
   appleWebApp: {
-    title: "ChatGPT",
+    title: Locale.App.Title,
     statusBarStyle: "default",
   },
 };
