@@ -153,8 +153,8 @@ const openaiModels = [
   "gpt-4-turbo-2024-04-09"
 ];
 
-const isGoogle = !!process.env.GOOGLE_API_KEY;
-const isAnthropic = !!process.env.ANTHROPIC_API_KEY;
+const isGoogle = true; //!!process.env.GOOGLE_API_KEY;
+const isAnthropic = false; //!!process.env.ANTHROPIC_API_KEY;
 
 const googleModels = isGoogle? [
   "gemini-1.0-pro",
