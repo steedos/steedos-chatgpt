@@ -7,7 +7,7 @@ import { LocaleType } from "./index";
 const isApp = !!getClientConfig()?.isApp;
 const en: LocaleType = {
   App: {
-    Title: "Chatbot Builder",
+    Title: "灵犀 Chat",
     Description: "Build your AI assistant.",
   },
   WIP: "Coming Soon...",
