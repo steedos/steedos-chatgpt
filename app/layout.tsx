@@ -40,7 +40,7 @@ export default function RootLayout({
         <meta name="config" content={JSON.stringify(getClientConfig())} />
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
         {/* <link rel="manifest" href="/site.webmanifest"></link> */}
-        <link rel="icon" type="image/svg" href="/chatgpt.svg"></link>
+        <link rel="icon" type="image/svg" href="/logo.svg"></link>
         <script src="/serviceWorkerRegister.js" defer></script>
       </head>
       <body>
