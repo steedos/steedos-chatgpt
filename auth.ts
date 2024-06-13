@@ -27,4 +27,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return { ...session, user: { ...session.user, groups: token.groups } };
     },
   },
+  cookies: {
+    sessionToken: {
+      name: `__Secure-next-auth.session-token`,
+      options: {
+        httpOnly: true,
+        sameSite: 'none',
+        path: '/',
+        secure: true,
+      },
+    },
+  },
 })
