@@ -130,13 +130,6 @@ const loadAsyncGoogleFont = () => {
 
 function Screen() {
   let navigate = useNavigate();
-  const session = useSession();
-  const unauthenticated = session?.status && session?.status === "unauthenticated";
-  if (unauthenticated) {
-    // navigate("/auth");
-    document.location.href = "/#/auth";
-  } 
-
   const config = useAppConfig();
   const location = useLocation();
   const isHome = location.pathname === Path.Home;
@@ -205,11 +198,21 @@ export function Home() {
   useSwitchTheme();
   useLoadData();
   useHtmlLang();
+  const session = useSession();
 
   useEffect(() => {
     console.log("[Config] got config from build time", getClientConfig());
-    useAccessStore.getState().fetch();
-  }, []);
+
+    window.signIn = signIn;
+    console.log(session)
+    if (session && session.status && session.status != "loading") {
+      useAccessStore.getState().fetch();
+      if (session.status === "unauthenticated") {
+        signIn('keycloak')
+      } 
+    }
+
+  }, [session]);
 
   if (!useHasHydrated()) {
     return <Loading />;
