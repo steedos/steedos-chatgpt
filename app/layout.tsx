@@ -42,6 +42,8 @@ export default function RootLayout({
         {/* <link rel="manifest" href="/site.webmanifest"></link> */}
         <link rel="icon" type="image/svg" href="/logo.svg"></link>
         <script src="/serviceWorkerRegister.js" defer></script>
+        <meta http-equiv="Content-Security-Policy" content="frame-ancestors 'self' builder.com *.builder6.com  *.builder6.app builder6.steedos.cn *.steedos.cn *.steedos.com;"/>
+
       </head>
       <body>
         {children}
