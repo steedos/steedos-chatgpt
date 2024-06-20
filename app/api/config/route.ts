@@ -26,9 +26,9 @@ async function handle(req: NextRequest) {
   const user =  (req as any).auth?.user;
   let customModels = "";
   // if (!user?.groups?.includes("chatgpt")) {
-    customModels += DEFAULT_MODELS.filter((m) => m.name.startsWith("gpt-4"))
-      .map((m) => "-" + m.name)
-      .join(",");
+  //   customModels += DEFAULT_MODELS.filter((m) => m.name.startsWith("gpt-4"))
+  //     .map((m) => "-" + m.name)
+  //     .join(",");
   // }
   return NextResponse.json({
     ...DANGER_CONFIG,
